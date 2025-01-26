@@ -1,0 +1,6 @@
+class Guesser:
+    def __init__(self):
+        ...
+    def guess(self, word, n):
+        ...
+    

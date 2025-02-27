@@ -1,4 +1,5 @@
 import numpy as np
+np.random.seed(7)
 
 class GameState:
     def __init__(self):
@@ -40,3 +41,9 @@ class GameState:
         # making assignment_board an instance attribute
         self.assignment_board = assignment_board
         self.current_player = current_player
+
+        for word_list in range(len(word_board)):
+            for word in range(len(word_board[word_list])):
+                if word_board[word_list][word] == 'PIT':
+                    index_word = (word_list, word)
+        self.index_word = index_word

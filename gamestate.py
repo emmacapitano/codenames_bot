@@ -24,7 +24,7 @@ class GameState:
         current_player = np.random.choice([True, False], size=1)
         # red is going first when current_player == True
         current_player = current_player[0]
-        # when red is first, there are 9 red words and 8 blue words
+        # when red is first word_board, there are 9 red words and 8 blue words
         if current_player:
             r = ['r']*9
             b = ['b']*8
@@ -42,8 +42,16 @@ class GameState:
         self.assignment_board = assignment_board
         self.current_player = current_player
 
-        for word_list in range(len(word_board)):
-            for word in range(len(word_board[word_list])):
-                if word_board[word_list][word] == 'PIT':
-                    index_word = (word_list, word)
-        self.index_word = index_word
+    def find_index(self, w):
+        for word_list in range(len(self.word_board)):
+            for word in range(len(self.word_board[word_list])):
+                if self.word_board[word_list][word] == w:
+                    return (word_list, word)
+        
+
+gamestate = GameState()
+
+print(gamestate.word_board)
+user_input = input("What's your guess? ").upper
+index_word = gamestate.find_index(user_input)
+print(index_word)

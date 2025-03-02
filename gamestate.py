@@ -1,5 +1,5 @@
 import numpy as np
-np.random.seed(7)
+import sys
 
 class GameState:
     def __init__(self):
@@ -42,16 +42,34 @@ class GameState:
         self.assignment_board = assignment_board
         self.current_player = current_player
 
-    def find_index(self, w):
-        for word_list in range(len(self.word_board)):
-            for word in range(len(self.word_board[word_list])):
-                if self.word_board[word_list][word] == w:
-                    return (word_list, word)
+        assassin_1, assassin_2 = self.find_index(self.assignment_board, 'a')
+        self.assassin_word = self.word_board[assassin_1][assassin_2]  
+
+        # covered_words are guessed words that will not be taken into account when coming up with codenames
+        self.covered_words = [False]*25
+        # create 5x5 board of non-guessed words
+        self.covered_words = np.resize(self.covered_words, (5,5))
+
+    def place_card(self, w):
+        if w == self.assassin_word and self.current_player == True:
+            sys.exit("GAME OVER!\nYou hit the assassin!\nBlue Team wins!")
+        elif w == self.assassin_word and self.current_player == False:
+            sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")
+        #find index
+        w_1, w_2 = self.find_index(self.word_board, w)
         
+        #This method will say if that word red, blue, grey, or assassin
+        #Use assassin_word here
+        
+        #attach index to covered_words
+        self.covered_words[w_1][w_2] = True
+        return self.covered_words      
 
-gamestate = GameState()
+    def find_index(self, board_list, w):
+        for word_list in range(len(board_list)):
+            for word in range(len(board_list[word_list])):
+                if board_list[word_list][word] == w:
+                    return (word_list, word)
+    
 
-print(gamestate.word_board)
-user_input = input("What's your guess? ").upper
-index_word = gamestate.find_index(user_input)
-print(index_word)
+

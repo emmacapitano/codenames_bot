@@ -3,6 +3,12 @@ import sys
 
 class GameState:
     def __init__(self):
+        '''creates a 5x5 gameboard of words and identical assignment list of a mix of ['r', 'b', 'a', 'g'].
+            Picks who is going first uses that to determine who wins in the end. 
+            We retreive the index of the input that will match a word within the gameboard.
+            We match that index to the same index in the assignment list.
+            We say that input's value, prevent it from being guessed again, and switch to next player.
+            If input's assignment is 'a', gameover.'''
         # empty words list to put codenames wordlist in
         words = []
         # open file with wordlist
@@ -50,26 +56,31 @@ class GameState:
         # create 5x5 board of non-guessed words
         self.covered_words = np.resize(self.covered_words, (5,5))
 
-    def place_card(self, w):
-        if w == self.assassin_word and self.current_player == True:
+    def place_card(self, guess):
+        '''Check if guess matches the intance of assassin_word.
+        Find the index of the guess in the instance of word_board.
+        In covered_words, change the value in that index to True...'''
+        if guess == self.assassin_word and self.current_player == True:
             sys.exit("GAME OVER!\nYou hit the assassin!\nBlue Team wins!")
-        elif w == self.assassin_word and self.current_player == False:
+        elif guess == self.assassin_word and self.current_player == False:
             sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")
         #find index
-        w_1, w_2 = self.find_index(self.word_board, w)
+        g_1, g_2 = self.find_index(self.word_board, guess)
         
         #This method will say if that word red, blue, grey, or assassin
         #Use assassin_word here
         
         #attach index to covered_words
-        self.covered_words[w_1][w_2] = True
+        self.covered_words[g_1][g_2] = True
         return self.covered_words      
 
-    def find_index(self, board_list, w):
-        for word_list in range(len(board_list)):
-            for word in range(len(board_list[word_list])):
-                if board_list[word_list][word] == w:
-                    return (word_list, word)
+    def find_index(self, board_list, word) -> tuple:
+        '''retrieves 2x1 index of a provided word in 
+            the instance of the provided nested list'''
+        for index_1 in range(len(board_list)):
+            for index_2 in range(len(board_list[index_1])):
+                if board_list[index_1][index_2] == word:
+                    return (index_1, index_2)
     
 
 

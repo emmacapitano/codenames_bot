@@ -2,13 +2,22 @@ import numpy as np
 import sys
 
 class GameState:
+    """
+    This is a class for a game that creates a word board and the user guesses words.
+
+    Attributes:
+        word_board (list of str): The words user sees and guesses from.
+        assignment_board (list of str): Values of list are a mixture of ['r', 'b', 'a', 'g'].
+        covered_words (list of bools): Values remain False until a word from the matching index in word_board is guessed.
+        current_player (bool): A random bool that decides if red or blue team goes first.
+    """
     def __init__(self):
-        '''creates a 5x5 gameboard of words and identical assignment list of a mix of ['r', 'b', 'a', 'g'].
-            Picks who is going first uses that to determine who wins in the end. 
-            We retreive the index of the input that will match a word within the gameboard.
-            We match that index to the same index in the assignment list.
-            We say that input's value, prevent it from being guessed again, and switch to next player.
-            If input's assignment is 'a', gameover.'''
+        """
+        The constructor for the GameState class:
+
+        Parameters:
+            self: instance of the attributes created within __init__.
+        """
         # empty words list to put codenames wordlist in
         words = []
         # open file with wordlist
@@ -56,10 +65,17 @@ class GameState:
         # create 5x5 board of non-guessed words
         self.covered_words = np.resize(self.covered_words, (5,5))
 
-    def place_card(self, guess):
-        '''Check if guess matches the intance of assassin_word.
-        Find the index of the guess in the instance of word_board.
-        In covered_words, change the value in that index to True...'''
+    def place_card(self, guess) -> str:
+        """
+        The function to change the word_board and keep track of guessed words.
+
+        Parameters:
+            self: Current instance of program.
+            guess (str): User input of a word within word_board.
+
+        Returns:
+            ... : String that conveys the outcome of the guess to the user.
+        """
         if guess == self.assassin_word and self.current_player == True:
             sys.exit("GAME OVER!\nYou hit the assassin!\nBlue Team wins!")
         elif guess == self.assassin_word and self.current_player == False:
@@ -70,13 +86,26 @@ class GameState:
         #This method will say if that word red, blue, grey, or assassin
         #Use assassin_word here
         
+        # thinking about useing matplotlib.text but from what I saw I need 
+        # to state each item I want in the table. Could I do it by referencing item index?
+        # is there a method that will just take my nested list and print it prettily?
+
         #attach index to covered_words
         self.covered_words[g_1][g_2] = True
         return self.covered_words      
 
     def find_index(self, board_list, word) -> tuple:
-        '''retrieves 2x1 index of a provided word in 
-            the instance of the provided nested list'''
+        """
+        The function to index a nested list.
+        
+        Parameters:
+            self: Current instance of the program.
+            board_list (nested list): The word_board currently in use.
+            word (str): The user input.
+
+        Returns:
+            (index_1, index_2): A tuple that represents word's location in the list.
+        """
         for index_1 in range(len(board_list)):
             for index_2 in range(len(board_list[index_1])):
                 if board_list[index_1][index_2] == word:

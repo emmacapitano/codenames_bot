@@ -16,7 +16,7 @@ class GameState:
         The constructor for the GameState class:
 
         Parameters:
-            self: instance of the attributes created within __init__.
+            null
         """
         # empty words list to put codenames wordlist in
         words = []
@@ -65,12 +65,11 @@ class GameState:
         # create 5x5 board of non-guessed words
         self.covered_words = np.resize(self.covered_words, (5,5))
 
-    def place_card(self, guess) -> str:
+    def place_card(self, guess:str) -> str:
         """
         The function to change the word_board and keep track of guessed words.
 
         Parameters:
-            self: Current instance of program.
             guess (str): User input of a word within word_board.
 
         Returns:
@@ -94,12 +93,11 @@ class GameState:
         self.covered_words[g_1][g_2] = True
         return self.covered_words      
 
-    def find_index(self, board_list, word) -> tuple:
+    def find_index(self, board_list:np.ndarray, word:str) -> tuple:
         """
         The function to index a nested list.
         
         Parameters:
-            self: Current instance of the program.
             board_list (nested list): The word_board currently in use.
             word (str): The user input.
 

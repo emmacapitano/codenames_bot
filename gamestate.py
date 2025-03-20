@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
 
 class GameState:
     """
@@ -108,6 +109,27 @@ class GameState:
             for index_2 in range(len(board_list[index_1])):
                 if board_list[index_1][index_2] == word:
                     return (index_1, index_2)
+    
+    #this will move to the player class
+    def view_board(self):
+        color_codes = {'r':'red', 'b':'cyan', 'a':'black', 'g':'yellow'}
+
+        fig, ax = plt.subplots(5,5, figsize=(5, 5))
+        fig.subplots_adjust(hspace=0, wspace=0)
+
+        for i in range(5):
+            for j in range(5):
+                ax[i, j].xaxis.set_major_locator(plt.NullLocator())
+                ax[i, j].yaxis.set_major_locator(plt.NullLocator())
+                word_board_str = self.word_board[i, j]
+                color = self.assignment_board[i, j]
+                ax[i, j].text(.5, .5, word_board_str, 
+                        horizontalalignment='center', 
+                        verticalalignment='center')
+                if self.covered_words[i, j]:
+                    ax[i, j].set_facecolor(color_codes[color])
+        plt.show()
+
     
 
 

@@ -1,5 +1,7 @@
 import numpy as np
 import sys
+import matplotlib
+# matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 class GameState:
@@ -129,7 +131,4 @@ class GameState:
                 if self.covered_words[i, j]:
                     ax[i, j].set_facecolor(color_codes[color])
         plt.show()
-
-    
-
 

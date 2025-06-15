@@ -3,6 +3,7 @@ import sys
 import matplotlib
 # matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+import gensim.downloader as api
 
 class GameState:
     """
@@ -13,7 +14,10 @@ class GameState:
         assignment_board (list of str): Values of list are a mixture of ['r', 'b', 'a', 'g'].
         covered_words (list of bools): Values remain False until a word from the matching index in word_board is guessed.
         current_player (bool): A random bool that decides if red or blue team goes first.
+        wv (models.word2vec): gensim model word2vec
     """
+
+
     def __init__(self):
         """
         The constructor for the GameState class:
@@ -70,6 +74,7 @@ class GameState:
         # create 5x5 board of non-guessed words
         self.covered_words = np.resize(self.covered_words, (5,5))
 
+
     def place_card(self, guess:str) -> str:
         """
         The function to change the word_board and keep track of guessed words.
@@ -80,23 +85,18 @@ class GameState:
         Returns:
             ... : String that conveys the outcome of the guess to the user.
         """
-        '''if guess == self.assassin_word and self.current_player == True:
+        if guess == self.assassin_word and self.current_player == True:
             sys.exit("GAME OVER!\nYou hit the assassin!\nBlue Team wins!")
         elif guess == self.assassin_word and self.current_player == False:
-            sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")'''
+            sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")
+
         #find index
         g_1, g_2 = self.find_index(self.word_board, guess)
-        
-        #This method will say if that word red, blue, grey, or assassin
-        #Use assassin_word here
-        
-        # thinking about using matplotlib.text but from what I saw I need 
-        # to state each item I want in the table. Could I do it by referencing item index?
-        # is there a method that will just take my nested list and print it prettily?
 
         #attach index to covered_words
         self.covered_words[g_1][g_2] = True
         return self.covered_words      
+
 
     def find_index(self, board_list:np.ndarray, word:str) -> tuple:
         """
@@ -113,6 +113,7 @@ class GameState:
             for index_2 in range(len(board_list[index_1])):
                 if board_list[index_1][index_2] == word:
                     return (index_1, index_2)
+    
     
     #this will move to the player class
     def view_board(self):

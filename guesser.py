@@ -1,12 +1,23 @@
 import numpy as np
-import gensim.downloader as api
 from gamestate import GameState
-import sys
 
 class Guesser:
+    """
+    This is a class that guesses words from word board when given a codename and a number.
+    """
+
     def __init__(self):
         ...
-    def guess(self, gamestate:GameState, codename:str, n:int) -> list: 
+
+    def guess(self, gamestate:GameState, codename:str, n:int): 
+        """
+        The function uses word similarity to sort the available words and choose the top n words.
+
+        Parameters:
+            gamestate: instances of GameState.
+            codename (str): The codename the bot has provided.
+            n (int): the number of words the bot wants the guesser to guess.
+        """
         flat_wb = gamestate.word_board.flatten()
         word_dict = {}
         for word in flat_wb:
@@ -16,11 +27,22 @@ class Guesser:
                 word_dict.update({word: cosine})
         sorted_words = sorted(word_dict.keys(), key=lambda x: word_dict[x])
         guesses = sorted_words[-n:]
-        for word in guesses:
+        for word in guesses: 
             gamestate.place_card(word)
-        return sorted_words
 
-def word_similarity(gamestate:GameState, word_1:str, word_2:str):
+
+def word_similarity(gamestate:GameState, word_1:str, word_2:str) -> float:
+    """
+    The function finds the cosine of 2 word vectors.
+
+    Parameters:
+        gamestate: instances of GameState.
+        word_1 (str): The codename the bot has provided.
+        word_2 (str): one of the available words in word_board.
+
+    Returns: 
+        cos (float): the cosine of the 2 word vectors.
+    """
     # get the word vector indexes
     vector_1 = gamestate.wv[word_1.lower()]
     vector_2 = gamestate.wv[word_2.lower()]

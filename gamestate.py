@@ -21,6 +21,8 @@ class GameState:
         Parameters:
             null
         """
+        wv = api.load('fasttext-wiki-news-subwords-300')
+        self.wv = wv
         # empty words list to put codenames wordlist in
         words = []
         # open file with wordlist
@@ -78,17 +80,17 @@ class GameState:
         Returns:
             ... : String that conveys the outcome of the guess to the user.
         """
-        if guess == self.assassin_word and self.current_player == True:
+        '''if guess == self.assassin_word and self.current_player == True:
             sys.exit("GAME OVER!\nYou hit the assassin!\nBlue Team wins!")
         elif guess == self.assassin_word and self.current_player == False:
-            sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")
+            sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")'''
         #find index
         g_1, g_2 = self.find_index(self.word_board, guess)
         
         #This method will say if that word red, blue, grey, or assassin
         #Use assassin_word here
         
-        # thinking about useing matplotlib.text but from what I saw I need 
+        # thinking about using matplotlib.text but from what I saw I need 
         # to state each item I want in the table. Could I do it by referencing item index?
         # is there a method that will just take my nested list and print it prettily?
 

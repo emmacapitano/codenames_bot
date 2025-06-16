@@ -27,8 +27,7 @@ class Guesser:
                 word_dict.update({word: cosine})
         sorted_words = sorted(word_dict.keys(), key=lambda x: word_dict[x])
         guesses = sorted_words[-n:]
-        for word in guesses: 
-            gamestate.place_card(word)
+        gamestate.place_card(guesses)
 
 
 def word_similarity(gamestate:GameState, word_1:str, word_2:str) -> float:

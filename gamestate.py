@@ -75,7 +75,7 @@ class GameState:
         self.covered_words = np.resize(self.covered_words, (5,5))
 
 
-    def place_card(self, guess:str) -> str:
+    def place_card(self, guess:list) -> str:
         """
         The function to change the word_board and keep track of guessed words.
 
@@ -92,9 +92,9 @@ class GameState:
 
         #find index
         g_1, g_2 = self.find_index(self.word_board, guess)
-
-        #attach index to covered_words
-        self.covered_words[g_1][g_2] = True
+        for _ in guess:
+            #attach index to covered_words
+            self.covered_words[g_1][g_2] = True
         return self.covered_words      
 
 
@@ -114,7 +114,7 @@ class GameState:
                 if board_list[index_1][index_2] == word:
                     return (index_1, index_2)
     
-    
+
     #this will move to the player class
     def view_board(self):
         color_codes = {'r':'red', 'b':'cyan', 'a':'black', 'g':'yellow'}

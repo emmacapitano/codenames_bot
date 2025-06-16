@@ -89,11 +89,9 @@ class GameState:
             sys.exit("GAME OVER!\nYou hit the assassin!\nBlue Team wins!")
         elif guess == self.assassin_word and self.current_player == False:
             sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")
-
-        #find index
-        g_1, g_2 = self.find_index(self.word_board, guess)
-        for _ in guess:
-            #attach index to covered_words
+        
+        for g in guess:
+            g_1, g_2 = self.find_index(self.word_board, g)
             self.covered_words[g_1][g_2] = True
         return self.covered_words      
 

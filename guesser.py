@@ -23,8 +23,9 @@ class Guesser:
         for word in flat_wb:
             x, y = gamestate.find_index(gamestate.word_board, word)
             if not gamestate.covered_words[x, y]:
-                cosine = word_similarity(codename, word)
-                word_dict.update({word: cosine})
+                for w in word:
+                    cosine = word_similarity(gamestate, codename, word)
+                    word_dict.update({word: cosine})
         sorted_words = sorted(word_dict.keys(), key=lambda x: word_dict[x])
         guesses = sorted_words[-n:]
         gamestate.place_card(guesses)

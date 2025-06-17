@@ -21,9 +21,6 @@ class GameState:
     def __init__(self):
         """
         The constructor for the GameState class:
-
-        Parameters:
-            null
         """
         wv = api.load('fasttext-wiki-news-subwords-300')
         self.wv = wv

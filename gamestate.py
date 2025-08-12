@@ -25,15 +25,17 @@ class GameState:
         wv = api.load('fasttext-wiki-news-subwords-300')
         self.wv = wv
         # empty words list to put codenames wordlist in
-        words = []
+        all_words = []
         # open file with wordlist
         with open('./codenames_words.txt') as file:
             for line in file:
                 line = line.strip()
                 # add each word to file
-                words.append(line)
+                all_words.append(line)
+        self.all_words = np.array(all_words)
+        
         # create a new array with 25 of the words from wordlist    
-        word_board = np.array((np.random.choice(words, size=25, replace=False)))
+        word_board = np.array((np.random.choice(all_words, size=25, replace=False)))
         # make array a 5x5 nested list
         word_board = np.resize(word_board, (5,5))
         # making word_board an instance attribute
@@ -90,6 +92,9 @@ class GameState:
         for g in guess:
             g_1, g_2 = self.find_index(self.word_board, g)
             self.covered_words[g_1][g_2] = True
+            
+        # team's turn changes
+        self.current_player = not self.current_player
         return self.covered_words      
 
 

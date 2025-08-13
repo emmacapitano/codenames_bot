@@ -84,10 +84,6 @@ class GameState:
         Returns:
             ... : String that conveys the outcome of the guess to the user.
         """
-        if self.assassin_word in guess and self.current_player == True:
-            sys.exit("GAME OVER!\nYou hit the assassin!\nBlue Team wins!")
-        elif self.assassin_word in guess and self.current_player == False:
-            sys.exit("GAME OVER!\nYou hit the assassin!\nRed Team wins!")
         
         for g in guess:
             g_1, g_2 = self.find_index(self.word_board, g)

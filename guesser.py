@@ -29,6 +29,7 @@ class Guesser:
         sorted_words = sorted(word_dict.keys(), key=lambda x: word_dict[x])
         guesses = sorted_words[-n:]
         gamestate.place_card(guesses)
+        return guesses
 
 
 def word_similarity(gamestate:GameState, word_1:str, word_2:str) -> float:

@@ -29,7 +29,7 @@ class GameState:
         # open file with wordlist
         with open('./codenames_words.txt') as file:
             for line in file:
-                line = line.strip()
+                line = line.strip().lower()
                 # add each word to file
                 all_words.append(line)
         self.all_words = np.array(all_words)

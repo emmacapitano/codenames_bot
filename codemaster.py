@@ -4,6 +4,7 @@ from guesser import word_similarity
 import numpy as np
 from typing import Tuple
 
+
 class Codemaster:
     """
     This is a class that creates a codeword as a hint for the guesser.
@@ -31,18 +32,26 @@ class Codemaster:
         available_words = (gamestate.assignment_board == color) * (gamestate.covered_words == False) # 5x5 np.array of bools
         available_words = gamestate.word_board[available_words] # 1xn np.array of strings
         
-        if len(available_words) <= 3:
-            num_words = len(available_words)
+        if len(available_words) == 1:
+            num_words = 1
+            codename = get_most_similar_word(g=gamestate, word=available_words[0])
+        elif len(available_words) == 2:
+            ...
         else:
-            num_words = np.random.randint(1, 3)
-            chosen_words = np.array((np.random.choice(available_words, size=num_words, replace=False)))
+            ...
 
-        all_words_minus_board = []
-        for word in gamestate.all_words:
-            if word not in gamestate.word_board:
-                all_words_minus_board.append(word)
-
-        codename = np.random.choice(all_words_minus_board, size=1, replace=False)
 
         # np.random returns an array, so in the return we only, want the 0th element
-        return (codename[0], num_words)
+        return (codename, num_words)
+
+
+def get_most_similar_word(g:GameState, word:str):
+    # Get top 10 word similarity word tuples
+    similar_words = g.uv.similar_by_word(word)
+    similar_words = np.array([t[0] for t in similar_words])
+
+    # Remove words that exist on the board
+    board_words = g.word_board.flatten()
+    similar_words = [w for w in similar_words if w not in board_words]
+
+    return similar_words[0]

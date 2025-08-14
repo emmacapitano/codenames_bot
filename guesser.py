@@ -9,7 +9,7 @@ class Guesser:
     def __init__(self):
         ...
 
-    def guess(self, gamestate:GameState, codename:str, n:int): 
+    def guess(self, gamestate:GameState, codename:str, n:int) -> list:
         """
         The function uses word similarity to sort the available words and choose the top n words.
 
@@ -44,10 +44,15 @@ def word_similarity(gamestate:GameState, word_1:str, word_2:str) -> float:
     Returns: 
         cos (float): the cosine of the 2 word vectors.
     """
-    # get the word vector indexes
-    vector_1 = gamestate.wv[word_1.lower()]
-    vector_2 = gamestate.wv[word_2.lower()]
+    try:
+        # get the word vector indexes
+        vector_1 = gamestate.wv[word_1.lower()]
+        vector_2 = gamestate.wv[word_2.lower()]
     
+    # word similarity model gives KeyError when it doesn't recognize word.
+    except KeyError:
+        return 0
+
     dot_product = 0
     magnitude_1 = 0
     magnitude_2 = 0
@@ -59,4 +64,6 @@ def word_similarity(gamestate:GameState, word_1:str, word_2:str) -> float:
     magnitude_2 = np.sqrt(magnitude_2)
     cos = dot_product / (magnitude_1 * magnitude_2)
     return cos
+
+    
 

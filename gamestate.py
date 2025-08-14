@@ -3,7 +3,7 @@ import sys
 import matplotlib
 # matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-import gensim.downloader as api
+
 
 class GameState:
     """
@@ -18,11 +18,10 @@ class GameState:
     """
 
 
-    def __init__(self):
+    def __init__(self, wv):
         """
         The constructor for the GameState class:
         """
-        wv = api.load('fasttext-wiki-news-subwords-300')
         self.wv = wv
         # empty words list to put codenames wordlist in
         all_words = []

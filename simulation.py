@@ -13,8 +13,7 @@ if __name__ == "__main__":
     main()
 
 
-# 
-def simulation(wv):
+def simulation(wv, toggle_viz:bool=True):
 
     gamestate = GameState(wv=wv)
     guesser = Guesser()
@@ -32,7 +31,10 @@ def simulation(wv):
         
         print(guesses)
 
-        gamestate.view_board()
+        if toggle_viz:
+            gamestate.view_board()
+        else:
+            print(gamestate.assignment_board)
 
         red_words = (gamestate.assignment_board == 'r') * (gamestate.covered_words == False)
         red_words = gamestate.word_board[red_words]

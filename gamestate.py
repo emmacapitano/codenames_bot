@@ -57,6 +57,15 @@ class GameState:
         self.covered_words = [False]*25
         self.covered_words = np.resize(self.covered_words, (5,5))
 
+        # Making word-vectors
+        word_vectors = []
+        for w in word_board.flatten():
+            try:
+                word_vectors.append(wv[w])
+            except KeyError:
+                word_vectors.append(np.zeros(shape=wv.vector_size))
+        self.word_vectors = np.array(word_vectors)
+
 
     def place_card(self, guess:list):
         """

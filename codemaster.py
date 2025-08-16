@@ -4,6 +4,7 @@ from guesser import word_similarity
 import numpy as np
 from typing import Tuple
 from sklearn.cluster import KMeans
+from math import ceil
 
 
 class Codemaster:
@@ -12,8 +13,12 @@ class Codemaster:
     """
 
     def __init__(self):
-        ...
-    
+        # Store most recent attributes for post-hoc PCA visualization
+        self.last_color = None
+        self.last_available_words = None # 1xn np.array of strings
+        self.last_num_clusters = None # int
+        self.last_mod_centroids_wv = None # last_num_clusters x gamestate.wv.vector_size np.array
+
 
     def codeguy(self, gamestate:GameState, guesser:Guesser) -> Tuple[str, int]:
         """
@@ -29,23 +34,35 @@ class Codemaster:
             n: the number of words that need guessed
         """
 
+        # 1st get all available words for the team
         color = 'r' if gamestate.current_player else 'b'
         available_words = (gamestate.assignment_board == color) * (gamestate.covered_words == False) # 5x5 np.array of bools
         available_words = gamestate.word_board[available_words] # 1xn np.array of strings
         
+        # Store for post-hoc vis
+        self.last_color = color
+        self.last_available_words = available_words
+        
+        # Set the number of clusters based on number of words left
+        # Practical experience influences this formula
+        # For example, being able to successfully associate >= 4 words in 1 turn is unlikely
+        # There is probably a smarter way to do this
+        num_clusters = ceil(len(available_words) / 3)
+        self.last_num_clusters = num_clusters
+
+        # Run word vec matching algos
         if len(available_words) == 1:
             num_words = 1
             codename = get_most_similar_word(g=gamestate, word=available_words[0])
-        elif len(available_words) == 2:
-            # When 2 words are left, be conservative
-            # If the 2 words are closer to each other than all other team's 
-            ...
-
+        # TODO: In future iteration, could make a elif statement
+        # with more intelligent decision making at len(available_words) == 2
         else:
-            ...
+            cluster_idx, num_words, mod_centroids_wv = repel_word_vector(gamestate=gamestate, 
+                                                                         team_color=color, 
+                                                                         num_clusters = num_clusters)
+            codename = gamestate.wv.similar_by_vector(mod_centroids_wv[cluster_idx])
+            self.last_mod_centroids_wv = mod_centroids_wv
 
-
-        # np.random returns an array, so in the return we only, want the 0th element
         return (codename, num_words)
 
 
@@ -61,11 +78,11 @@ def get_most_similar_word(gamestate:GameState, word:str) -> str:
     return similar_words[0]
 
 
-def repel_word_vector(gamestate:GameState, team_color:str, num_clusters:int) -> np.array:
+def repel_word_vector(gamestate:GameState, team_color:str, num_clusters:int) -> Tuple[int, int, np.array]:
     """
-    Calculate Coulomb repulsion forces from all-other words on largest KMeans centroid 
+    Calculate Coulomb repulsion forces from all-other words on KMeans centroids
     based on words available to the current team (denoted by team_color).
-    Then move largest centroid in the direction of the calculated repulsion forces weighted by word association.
+    Then move centroids in the direction of the calculated repulsion forces weighted by word association.
 
     """
     available_words = (gamestate.assignment_board == team_color) * (gamestate.covered_words == False) # 5x5 np.array of bools
@@ -107,6 +124,7 @@ def repel_word_vector(gamestate:GameState, team_color:str, num_clusters:int) -> 
     # Get largest cluster id
     unique_elements, counts = np.unique(cluster_ids, return_counts=True)
     max_count_index = np.argmax(counts)
-    largest_cluster_id = unique_elements[max_count_index]
+    largest_cluster_idx = unique_elements[max_count_index]
+    largest_cluster_size = np.max(counts)
 
-    return modified_centroids_wv[largest_cluster_id]
+    return (largest_cluster_idx, largest_cluster_size, modified_centroids_wv)

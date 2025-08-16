@@ -109,7 +109,6 @@ def repel_word_vector(gamestate:GameState, team_color:str, num_clusters:int) -> 
     weights = {'r': 10, 'b': 10, 'a': 20, 'g': 5}
 
     # Find unsupervised cluster centroids
-    available_wv = np.resize(available_wv, (25, available_wv.shape[-1]))
     k_means = KMeans(n_clusters=num_clusters, 
                     random_state=0, 
                     n_init="auto").fit(available_wv)

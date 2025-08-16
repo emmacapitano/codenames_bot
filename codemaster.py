@@ -3,6 +3,7 @@ from guesser import Guesser
 from guesser import word_similarity
 import numpy as np
 from typing import Tuple
+from sklearn.cluster import KMeans
 
 
 class Codemaster:
@@ -36,7 +37,10 @@ class Codemaster:
             num_words = 1
             codename = get_most_similar_word(g=gamestate, word=available_words[0])
         elif len(available_words) == 2:
+            # When 2 words are left, be conservative
+            # If the 2 words are closer to each other than all other team's 
             ...
+
         else:
             ...
 
@@ -45,7 +49,7 @@ class Codemaster:
         return (codename, num_words)
 
 
-def get_most_similar_word(g:GameState, word:str):
+def get_most_similar_word(g:GameState, word:str) -> str:
     # Get top 10 word similarity word tuples
     similar_words = g.uv.similar_by_word(word)
     similar_words = np.array([t[0] for t in similar_words])
@@ -55,3 +59,11 @@ def get_most_similar_word(g:GameState, word:str):
     similar_words = [w for w in similar_words if w not in board_words]
 
     return similar_words[0]
+
+
+def get_cluster_centroids(word_vectors:np.array, n_clusters=4) -> np.array:
+    k_means = KMeans(n_clusters=n_clusters, 
+                    random_state=0, 
+                    n_init="auto").fit(word_vectors)
+    
+    return(k_means.cluster_centers_)

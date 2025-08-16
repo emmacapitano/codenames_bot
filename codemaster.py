@@ -5,6 +5,7 @@ import numpy as np
 from typing import Tuple
 from sklearn.cluster import KMeans
 from math import ceil
+import re
 
 
 class Codemaster:
@@ -53,27 +54,38 @@ class Codemaster:
         # Run word vec matching algos
         if len(available_words) == 1:
             num_words = 1
-            codename = get_most_similar_word(g=gamestate, word=available_words[0])
+            codename = get_most_similar_word(gamestate=gamestate, 
+                                             word=available_words[0])
         # TODO: In future iteration, could make a elif statement
         # with more intelligent decision making at len(available_words) == 2
         else:
             cluster_idx, num_words, mod_centroids_wv = repel_word_vector(gamestate=gamestate, 
                                                                          team_color=color, 
                                                                          num_clusters = num_clusters)
-            codename = gamestate.wv.similar_by_vector(mod_centroids_wv[cluster_idx])
+            codename = get_most_similar_word(gamestate=gamestate,
+                                             word=mod_centroids_wv[cluster_idx])
             self.last_mod_centroids_wv = mod_centroids_wv
 
         return (codename, num_words)
 
 
-def get_most_similar_word(gamestate:GameState, word:str) -> str:
+def get_most_similar_word(gamestate:GameState, word:str | np.ndarray) -> str:
+    """
+    Get most similar word that exists in the gamestate.wv model
+    Constrain the model's returned words such that they
+        - do not contain special characters
+        - do not already exist on the board
+    """
     # Get top 10 word similarity word tuples
-    similar_words = gamestate.wv.similar_by_word(word)
+    if type(word) is str:
+        similar_words = gamestate.wv.similar_by_word(word)
+    else:
+        similar_words = gamestate.wv.similar_by_vector(word)
     similar_words = np.array([t[0] for t in similar_words])
 
     # Remove words that exist on the board
     board_words = gamestate.word_board.flatten()
-    similar_words = [w for w in similar_words if w not in board_words]
+    similar_words = [w for w in similar_words if (w not in board_words) and (not re.search('[^A-Za-z]', w))]
 
     return similar_words[0]
 
@@ -87,7 +99,7 @@ def repel_word_vector(gamestate:GameState, team_color:str, num_clusters:int) -> 
     """
     available_words = (gamestate.assignment_board == team_color) * (gamestate.covered_words == False) # 5x5 np.array of bools
     available_wv = gamestate.word_vectors[available_words] # n x g.wv.vector_size
-    
+
     # Bad words are any other word
     bad_words = (gamestate.assignment_board != team_color) * (gamestate.covered_words == False) # 5x5 np.array of bools
     bad_words_assignment = gamestate.assignment_board[bad_words]

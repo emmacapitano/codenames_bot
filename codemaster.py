@@ -61,38 +61,32 @@ def get_most_similar_word(gamestate:GameState, word:str) -> str:
     return similar_words[0]
 
 
-def get_cluster_centroids(word_vectors:np.array, n_clusters:int=4) -> np.array:
+def repel_word_vector(gamestate:GameState, team_color:str, num_clusters:int) -> np.array:
     """
-    Uses K-means to find centroids of unsupervised clusters
-    """
-    # First flatten 5x5xn -> 25xn
-    word_vectors = np.resize(word_vectors, (25, word_vectors.shape[-1]))
-    k_means = KMeans(n_clusters=n_clusters, 
-                    random_state=0, 
-                    n_init="auto").fit(word_vectors)
-    
-    return(k_means.cluster_centers_)
+    Calculate Coulomb repulsion forces from all-other words on largest KMeans centroid 
+    based on words available to the current team (denoted by team_color).
+    Then move largest centroid in the direction of the calculated repulsion forces weighted by word association.
 
-
-def repel_word_vector(g:GameState, team_color:str, num_clusters:int):
     """
-    Moves word vectors further away other team's word vectors
-    Inspired by Coulomb's law to "repel" away from undesirable words
-    """
-    available_words = (g.assignment_board == team_color) * (g.covered_words == False) # 5x5 np.array of bools
-    available_wv = g.word_vectors[available_words] # n x g.wv.vector_size
+    available_words = (gamestate.assignment_board == team_color) * (gamestate.covered_words == False) # 5x5 np.array of bools
+    available_wv = gamestate.word_vectors[available_words] # n x g.wv.vector_size
     
     # Bad words are any other word
-    bad_words = (g.assignment_board != team_color) * (g.covered_words == False) # 5x5 np.array of bools
-    bad_words_assignment = g.assignment_board[bad_words]
-    bad_wv = g.word_vectors[bad_words] # m x g.wv.vector_size
+    bad_words = (gamestate.assignment_board != team_color) * (gamestate.covered_words == False) # 5x5 np.array of bools
+    bad_words_assignment = gamestate.assignment_board[bad_words]
+    bad_wv = gamestate.word_vectors[bad_words] # m x g.wv.vector_size
     
     # Define the weight of the "repulsive" force
     weights = {'r': 10, 'b': 10, 'a': 20, 'g': 5}
 
     # Find unsupervised cluster centroids
-    cluster_centers_wv = get_cluster_centroids(word_vectors=available_wv, 
-                          n_clusters=num_clusters)
+    available_wv = np.resize(available_wv, (25, available_wv.shape[-1]))
+    k_means = KMeans(n_clusters=num_clusters, 
+                    random_state=0, 
+                    n_init="auto").fit(available_wv)
+    
+    cluster_centers_wv = k_means.cluster_centers_
+    cluster_ids = k_means.labels_
 
     # Calculate the Coulomb repulsion forces from the bad words on the available words
     # Weight the repulsive force by weights
@@ -108,4 +102,11 @@ def repel_word_vector(g:GameState, team_color:str, num_clusters:int):
     f_repulse_12 = np.array(f_repulse_12) # num_other_ix x num_clusters x 25
     f_repulse_12 = np.sum(f_repulse_12, axis=0) / f_repulse_12.shape[0] # num_clusters x 25
 
-    return cluster_centers_wv + f_repulse_12
+    modified_centroids_wv = cluster_centers_wv + f_repulse_12
+
+    # Get largest cluster id
+    unique_elements, counts = np.unique(cluster_ids, return_counts=True)
+    max_count_index = np.argmax(counts)
+    largest_cluster_id = unique_elements[max_count_index]
+
+    return modified_centroids_wv[largest_cluster_id]

@@ -49,7 +49,7 @@ def simulation(wv, toggle_viz:bool=True):
 
 def main():
     wv = api.load('glove-twitter-25')
-    simulation(wv)
+    print(simulation(wv))
 
 
 if __name__ == "__main__":

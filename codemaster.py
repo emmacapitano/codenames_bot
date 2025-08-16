@@ -49,13 +49,13 @@ class Codemaster:
         return (codename, num_words)
 
 
-def get_most_similar_word(g:GameState, word:str) -> str:
+def get_most_similar_word(gamestate:GameState, word:str) -> str:
     # Get top 10 word similarity word tuples
-    similar_words = g.uv.similar_by_word(word)
+    similar_words = gamestate.wv.similar_by_word(word)
     similar_words = np.array([t[0] for t in similar_words])
 
     # Remove words that exist on the board
-    board_words = g.word_board.flatten()
+    board_words = gamestate.word_board.flatten()
     similar_words = [w for w in similar_words if w not in board_words]
 
     return similar_words[0]

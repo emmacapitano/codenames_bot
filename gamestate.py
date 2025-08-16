@@ -65,7 +65,7 @@ class GameState:
             except KeyError:
                 word_vectors.append(np.zeros(shape=wv.vector_size))
         self.word_vectors = np.array(word_vectors)
-
+        self.word_vectors = np.resize(self.word_vectors, (5,5,wv.vector_size))
 
     def place_card(self, guess:list):
         """

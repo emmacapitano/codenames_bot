@@ -61,10 +61,12 @@ def get_most_similar_word(gamestate:GameState, word:str) -> str:
     return similar_words[0]
 
 
-def get_cluster_centroids(word_vectors:np.array, n_clusters=4) -> np.array:
+def get_cluster_centroids(word_vectors:np.array, n_clusters:int=4) -> np.array:
     """
     Uses K-means to find centroids of unsupervised clusters
     """
+    # First flatten 5x5xn -> 25xn
+    word_vectors = np.resize(word_vectors, (25, word_vectors.shape[-1]))
     k_means = KMeans(n_clusters=n_clusters, 
                     random_state=0, 
                     n_init="auto").fit(word_vectors)

@@ -15,7 +15,6 @@ def simulation(wv, toggle_viz:bool=True):
     while game:
 
         codename, num_words = codemaster.codeguy(gamestate=gamestate, guesser=guesser)
-        codemaster.display_pca(gamestate=gamestate)
 
         print(f'{codename}, {num_words}')
 
@@ -24,6 +23,7 @@ def simulation(wv, toggle_viz:bool=True):
         print(guesses)
 
         if toggle_viz:
+            codemaster.display_pca(gamestate=gamestate)
             gamestate.view_board()
         else:
             print(gamestate.assignment_board)

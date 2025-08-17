@@ -6,6 +6,8 @@ from typing import Tuple
 from sklearn.cluster import KMeans
 from math import ceil
 import re
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 
 class Codemaster:
@@ -67,6 +69,52 @@ class Codemaster:
             self.last_mod_centroids_wv = mod_centroids_wv
 
         return (codename, num_words)
+    
+    
+    def display_pca(self, gamestate:GameState):
+
+        available_words = (gamestate.assignment_board == self.last_color) * (gamestate.covered_words == False) # 5x5 np.array of bools
+        available_wv = gamestate.word_vectors[available_words] # n x g.wv.vector_size
+
+        # Find unsupervised cluster centroids
+        k_means = KMeans(n_clusters=self.last_num_clusters, 
+                        random_state=0, 
+                        n_init="auto").fit(available_wv)
+        
+        cluster_centers_wv = k_means.cluster_centers_
+        cluster_ids = k_means.labels_
+
+        # colors
+        color_map = {'b': 'blue', 'r': 'red', 'a': 'black', 'g': 'yellow'}
+        game_colors = [color_map[a] for a in gamestate.assignment_board.flatten()]
+
+        # Combine all word(vec)s on board with centroid word(vec)s
+        words = gamestate.word_board.flatten()
+        all_word_vectors = np.resize(gamestate.word_vectors, (25, gamestate.wv.vector_size))
+        added_vec_idx = all_word_vectors.shape[0] + np.arange(cluster_centers_wv.shape[0])
+        all_word_vectors = np.append(all_word_vectors, cluster_centers_wv, axis=0)
+        words = np.append(words, ['centroid_word: ' + get_most_similar_word(gamestate, word=w) for w in cluster_centers_wv])
+        word_colors = np.append(game_colors, ['green'] * cluster_centers_wv.shape[0])
+        
+        if self.last_mod_centroids_wv is not None:
+            # Add to word_vectors to be PCAed but pass None and 'none' to matplotlib so they are not plotted
+            added_vec_new_idx = all_word_vectors.shape[0] + np.arange(self.last_mod_centroids_wv.shape[0])
+            all_word_vectors = np.append(all_word_vectors, self.last_mod_centroids_wv, axis=0)
+            words = np.append(words, ['adjusted_word: ' + get_most_similar_word(gamestate, word=w) for w in self.last_mod_centroids_wv])
+            word_colors = np.append(word_colors, ['none'] * self.last_mod_centroids_wv.shape[0])
+            # word_colors = np.append(word_colors, ['purple'] * added_vec_new.shape[0])
+
+        twodim = PCA().fit_transform(all_word_vectors)[:,:2]
+        
+        plt.figure(figsize=(6,6))
+        plt.scatter(twodim[:,0], twodim[:,1], color=word_colors.flatten())
+        for word, (x,y) in zip(words.flatten(), twodim):
+            plt.text(x+0.05, y+0.05, word)
+
+        for (og_added_idx, new_added_idx) in zip(added_vec_idx, added_vec_new_idx):
+            x, y = twodim[og_added_idx]
+            x_new, y_new = twodim[new_added_idx]
+            plt.arrow(x, y, x_new - x, y_new - y, length_includes_head=True, head_width=0.05)
 
 
 def get_most_similar_word(gamestate:GameState, word:str | np.ndarray) -> str:

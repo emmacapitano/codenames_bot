@@ -46,8 +46,8 @@ def word_similarity(gamestate:GameState, word_1:str, word_2:str) -> float:
     """
     try:
         # get the word vector indexes
-        vector_1 = gamestate.wv[word_1.lower()]
-        vector_2 = gamestate.wv[word_2.lower()]
+        vector_1 = gamestate.wv[word_1]
+        vector_2 = gamestate.wv[word_2]
     
     # word similarity model gives KeyError when it doesn't recognize word.
     except KeyError:

@@ -4,15 +4,6 @@ from codemaster import Codemaster
 import gensim.downloader as api
 
 
-def main():
-
-    wv = api.load('glove-twitter-25')
-    simulation(wv)
-
-if __name__ == "__main__":
-    main()
-
-
 def simulation(wv, toggle_viz:bool=True):
 
     gamestate = GameState(wv=wv)
@@ -32,6 +23,7 @@ def simulation(wv, toggle_viz:bool=True):
         print(guesses)
 
         if toggle_viz:
+            codemaster.display_pca(gamestate=gamestate)
             gamestate.view_board()
         else:
             print(gamestate.assignment_board)
@@ -54,3 +46,14 @@ def simulation(wv, toggle_viz:bool=True):
         elif gamestate.assassin_word in guesses and gamestate.current_player == False:
             game = False
             return("GAME OVER!\nYou hit the assassin!\nRed Team wins!")
+        
+
+def main():
+    wv = api.load('glove-twitter-25')
+    print(simulation(wv))
+
+
+if __name__ == "__main__":
+    main()
+
+

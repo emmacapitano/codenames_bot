@@ -15,6 +15,7 @@ class GameState:
         covered_words (list of bools): Values remain False until a word from the matching index in word_board is guessed.
         current_player (bool): A random bool that decides if red or blue team goes first.
         wv (models.word2vec): gensim model word2vec
+        word_vectors: 5x5xn-dimensional word vector tensor where n is equal to self.wv.vector_size
     """
 
 

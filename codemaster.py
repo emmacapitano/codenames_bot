@@ -13,6 +13,12 @@ from sklearn.decomposition import PCA
 class Codemaster:
     """
     This is a class that creates a codeword as a hint for the guesser.
+
+    Attributes:
+        last_color: Most recent team color
+        last_available_word: Team’s most recent available words
+        last_num_clusters: Number of kmeans clusters used for code generation
+        last_mod_centroids_wv: Modified kmean centroids based on most recent available words. Has shape self.last_num_clusters x gensim.models.KeyedVectors.vector_size
     """
 
     def __init__(self):
@@ -29,8 +35,8 @@ class Codemaster:
         guesser how many words they need to guess.
 
         Parameters:
-            gamestate:
-            guesser:
+            gamestate
+            guesser
         
         Returns:
             codename: the code word that connects the guessable words

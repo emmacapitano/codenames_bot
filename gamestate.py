@@ -13,6 +13,7 @@ class GameState:
         all_words (list of str): A list of all the possible words in the game pulled from an external file
         word_board (list of str): The words user sees and guesses from.
         assignment_board (list of str): Values of list are a mixture of ['r', 'b', 'a', 'g'].
+        assassin_word (str): A string present in the current instance of the word_board. That string shares the same index as ‘a’ in assignment board.
         covered_words (list of bools): Values remain False until a word from the matching index in word_board is guessed.
         current_player (bool): A random bool that decides if red or blue team goes first.
         wv (models.word2vec): gensim model word2vec
@@ -45,7 +46,7 @@ class GameState:
             r = ['r']*9
             b = ['b']*8
         else:
-            r = ['r']*8
+            r = ['r']*8 
             b = ['b']*9
         assignment_board += r + b
         np.random.shuffle(assignment_board)

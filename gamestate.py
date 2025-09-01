@@ -10,6 +10,7 @@ class GameState:
     This is a class for a game that creates a word board and the user guesses words.
 
     Attributes:
+        all_words (list of str): A list of all the possible words in the game pulled from an external file
         word_board (list of str): The words user sees and guesses from.
         assignment_board (list of str): Values of list are a mixture of ['r', 'b', 'a', 'g'].
         covered_words (list of bools): Values remain False until a word from the matching index in word_board is guessed.

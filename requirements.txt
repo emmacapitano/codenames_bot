@@ -1,0 +1,15 @@
+contourpy
+cycler
+fonttools
+gensim
+kiwisolver
+matplotlib
+numpy
+packaging
+pillow
+pyparsing
+python-dateutil
+scipy
+six
+smart-open
+wrapt
